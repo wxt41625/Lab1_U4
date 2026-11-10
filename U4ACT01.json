@@ -1,0 +1,451 @@
+{
+  "info": {
+    "name": "U4ACT01 RESTCONF - Irvin Misael Mejía Hernández - GTIR246",
+    "_postman_id": "0fa3e2a9-a345-4a4f-9796-1ccbfad1ac08",
+    "description": "Práctica guiada Cisco RESTCONF y desafíos U4ACT01. Usar en router IOS XE de laboratorio autorizado. Antes de enviar: ajustar variables de la colección baseUrl (HTTPS y dirección del router), username y password (se deja vacía; no exportar credenciales). Ejecución en orden: GETs, PUT, verificar, PATCH, verificar, DELETE y errores. Al modificar baseUrl no poner barra final. No correr PUT dos veces si se requiere comprobar 201. Dirección de ejemplo RFC 5737: 192.0.2.8/32; cambiar si el profesor asignó una IP específica. El GET Loopback1 y el contenedor interfaces-state dependen del equipo/versión.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{username}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [],
+  "item": [
+    {
+      "name": "01 - Configuracion y consultas GET",
+      "item": [
+        {
+          "name": "01 - GET configuracion nativa en JSON",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/Cisco-IOS-XE-native:native",
+            "description": "Esperado: HTTP 200 + respuesta JSON. Captura 02."
+          },
+          "response": []
+        },
+        {
+          "name": "02 - GET configuracion nativa en XML",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+xml"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+xml"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/Cisco-IOS-XE-native:native",
+            "description": "Esperado: HTTP 200 + XML cambiando solamente Accept/Content-Type. Captura 03."
+          },
+          "response": []
+        },
+        {
+          "name": "03 - GET todas las interfaces en XML",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+xml"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+xml"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces",
+            "description": "Parte guiada: consultar interfaces en XML. Captura 04."
+          },
+          "response": []
+        },
+        {
+          "name": "04 - GET todas las interfaces en JSON",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces",
+            "description": "Parte guiada: consultar interfaces en JSON. Captura 05."
+          },
+          "response": []
+        },
+        {
+          "name": "05 - GET solo GigabitEthernet1 en JSON",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=GigabitEthernet1",
+            "description": "Desafio del profesor. Si el dispositivo no tiene GigabitEthernet1, elige una interfaz que exista y explica la diferencia. Captura 06."
+          },
+          "response": []
+        },
+        {
+          "name": "06 - GET Loopback1 (solo si existe)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback1",
+            "description": "Parte guiada original: Loopback1 debe existir; si no existe, un HTTP 404 es normal. No crear una interfaz no solicitada para esta consulta."
+          },
+          "response": []
+        },
+        {
+          "name": "07 - GET datos operativos (ietf-interfaces legacy)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces-state",
+            "description": "Responde a pregunta Parte 2, paso 3. Puede no estar presente en versiones recientes del modelo, usar solicitud alternativa si devuelve 404. Captura 07 si funciona."
+          },
+          "response": []
+        },
+        {
+          "name": "08 - GET datos operativos (modelo Cisco alternativa)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces",
+            "description": "Modelo alternativo Cisco IOS XE si interfaces-state no existe. Captura 07 si funciona."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Crear, modificar y borrar Loopback8",
+      "item": [
+        {
+          "name": "09 - PUT crear Loopback8 con nombre Irvin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Ejecutar una sola vez con la interfaz inexistente para obtener 201 Created. Captura 08 con el JSON y 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ietf-interfaces:interface\": {\n    \"name\": \"Loopback8\",\n    \"description\": \"Interfaz creada por Irvin Misael Mejía Hernández\",\n    \"type\": \"iana-if-type:softwareLoopback\",\n    \"enabled\": true,\n    \"ietf-ip:ipv4\": {\n      \"address\": [\n        {\n          \"ip\": \"192.0.2.8\",\n          \"netmask\": \"255.255.255.255\"\n        }\n      ]\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10 - GET validar Loopback8 creada",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Verificar name, description e IP. Captura 09."
+          },
+          "response": []
+        },
+        {
+          "name": "11 - PATCH modificar descripcion y deshabilitar Loopback8",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Esperado: 204 No Content o 200 OK. Captura 10. No reemplaza el recurso entero.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ietf-interfaces:interface\": {\n    \"name\": \"Loopback8\",\n    \"description\": \"Interfaz creada por Irvin Misael Mejía Hernández - actualizada con PATCH\",\n    \"enabled\": false\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12 - GET comprobar PATCH",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Verificar description actualizada y enabled:false. Captura 11."
+          },
+          "response": []
+        },
+        {
+          "name": "13 - DELETE eliminar Loopback8",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Ejecutar después de capturar las verificaciones. Esperado: 204 No Content. Captura 12."
+          },
+          "response": []
+        },
+        {
+          "name": "14 - GET comprobar eliminación",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces/interface=Loopback8",
+            "description": "Esperado: 404 Not Found tras DELETE. Captura 13 opcional."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Pruebas controladas de errores",
+      "item": [
+        {
+          "name": "15 - GET credencial erronea (401)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/Cisco-IOS-XE-native:native",
+            "description": "Se usa clave deliberadamente incorrecta en lugar de la variable password, para demostrar 401. Captura 14.",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{username}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "Cisco123",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16 - GET URI equivocada (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfases",
+            "description": "Typo intencional: interfases. Esperado: 404. Captura 15."
+          },
+          "response": []
+        },
+        {
+          "name": "17 - POST JSON mal formado (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/yang-data+json"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces",
+            "description": "JSON truncado a propósito. Esperado: 400 Bad Request. No crear interfaz si por accidente se corrige el JSON. Captura 16.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ietf-interfaces:interface\": {\n    \"name\": \"Loopback8\",\n    \"description\": \"Prueba de JSON inválido por Irvin Misael Mejía Hernández\"\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18 - POST tipo de contenido no permitido (415) opcional",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/yang-data+json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "url": "{{baseUrl}}/restconf/data/ietf-interfaces:interfaces",
+            "description": "Intentar provocar 415 Unsupported Media Type. El servidor puede devolver otro error de 4xx según su implementación. Opcional.",
+            "body": {
+              "mode": "raw",
+              "raw": "Esto no es un documento YANG JSON.",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://10.10.20.48",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "developer",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
